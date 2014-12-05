@@ -1,0 +1,12 @@
+README.md
+atom-monokai/
+atom-monokai-dark/
+atomic-emacs/
+autocomplete-plus/
+color-picker/
+file-icons/
+highlight-line/
+japanese-wrap/
+minimap/
+monokai-tweaked-syntax/
+recent-files/
