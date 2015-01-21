@@ -29,4 +29,15 @@ alias python2='/usr/bin/python'
 # Ruby
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 
+# gitのブランチ名を表示
+if [ -f /usr/local/Cellar/git/2.0.0/etc/bash_completion.d/git-completion.bash ]; then
+    source /usr/local/Cellar/git/2.0.0/etc/bash_completion.d/git-prompt.sh
+    source /usr/local/Cellar/git/2.0.0/etc/bash_completion.d/git-completion.bash
+    if [ -r "/usr/local/Cellar/git/2.0.0/etc/bash_completion.d/git-completion.bash" ]; then
+        PS1='\[\e[32m\]\W\[\e[38;5;214m\]$(__git_ps1 " (%s)")\[\033[00m\]: '
+    else
+        PS1="\[\e[32m\]\W: "
+    fi
+fi
+
 source ~/.profile
