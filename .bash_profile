@@ -1,6 +1,7 @@
 alias rm='rm -iv'
 alias mv='mv -i'
 alias ls='ls -pABFG'
+alias diff='diff -u'
 
 alias b='bundle'
 alias be='bundle exec'
@@ -11,10 +12,9 @@ export EDITOR=emacs
 export HISTSIZE=10000
 export PATH=/usr/local/bin:$PATH
 
-# boost
-export LIBRARY_PATH=/usr/local/lib:$LIBRARY_PATH
-export CPLUS_INCLUDE_PATH=/usr/local/include/:$CPLUS_INCLUDE_PATH
-export C_INCLUDE_PATH=/usr/local/include/:$C_INCLUDE_PATH
+# libgerbv
+export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/:/usr/lib/pkgconfig/$PKG_CONFIG_PATH
+export PATH=${PATH}:/usr/local/opt/gettext/bin
 
 # Javacの日本語出力をUTF8にする
 alias javac='javac -J-Dfile.encoding=UTF-8'
@@ -26,18 +26,35 @@ export PATH=$PATH:~/Documents/EclipseADT/ndk
 export JAVA_HOME=`/usr/libexec/java_home`
 
 # Python
-alias python='python3'
-alias python2='/usr/bin/python'
+alias ipython='ipython --pprint --no-confirm-exit'
+export PYTHONPATH=/usr/local/var/pyenv/shims/python
+
+# Pyenv
+export PYENV_ROOT=/usr/local/var/pyenv
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+# プロンプトにpyenvのversionを表示するための関数
+__pyenv_ps1 ()
+{
+    pyenv_local_version=`pyenv local 2>&1`
+    pyenv_python_version=`pyenv version | sed -e 's/ .*//'`
+    if [ ! "`echo $pyenv_local_version | grep "no local version configured"`" ]; then
+	printf " (python $pyenv_python_version)"
+    else
+	echo ""
+    fi
+}
 
 # Ruby
 # Rbenv
 eval "$(rbenv init -)"
 # prompt with ruby version
-# rbenv version | sed -e 's/ .*//'
 __rbenv_ps1 ()
 {
+  rbenv_local_version=`rbenv local 2>&1`
   rbenv_ruby_version=`rbenv version | sed -e 's/ .*//'`
-  if [ $rbenv_ruby_version != "system" ]; then
+  if [ ! "`echo $rbenv_local_version | grep "no local version configured"`" ]; then
       printf " (ruby $rbenv_ruby_version)"
   else
       echo ""
@@ -49,16 +66,15 @@ if [ -f `brew --prefix`/etc/bash_completion ]; then
     . `brew --prefix`/etc/bash_completion
 fi
 
-# プロンプトにgitのブランチ名・rbenvのversionを表示
+# プロンプトにgitのブランチ名・rbenvのversion・pyenvのversionを表示
 if [ -f `brew --prefix`/etc/bash_completion.d/git-completion.bash ]; then
     source `brew --prefix`/etc/bash_completion.d/git-prompt.sh
     source `brew --prefix`/etc/bash_completion.d/git-completion.bash
 
-    # デフォルトはディレクトリ名
     PS1='\[\e[32m\]\W'
-
     branch_name='\[\e[38;5;214m\]$(__git_ps1 " (%s)")'
     ruby_version='\[\e[0;31m\]$(__rbenv_ps1)'
+    python_version='\[\e[0;31m\]$(__pyenv_ps1)'
     suffix="\[\033[00m\]: "
 
     if [ -r "`brew --prefix`/etc/bash_completion.d/git-completion.bash" ]; then
@@ -69,7 +85,16 @@ if [ -f `brew --prefix`/etc/bash_completion.d/git-completion.bash ]; then
 	PS1=${PS1}${ruby_version}
     fi
 
+    if [ -f `which pyenv` ]; then
+	PS1=${PS1}${python_version}
+    fi
+
     PS1=${PS1}${suffix}
 fi
 
+# Node
+PATH="./node_modules/.bin:$PATH"
+
 source ~/.profile
+
+test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
